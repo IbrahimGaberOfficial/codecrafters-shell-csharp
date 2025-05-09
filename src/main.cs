@@ -54,9 +54,8 @@ public static class Program
 
         var startInfo = new ProcessStartInfo
         {
-            FileName = commandParts[0],
+            FileName = commandPath,
             Arguments = command.Substring(commandParts[0].Length).Trim(),
-            UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true
         };
@@ -65,13 +64,13 @@ public static class Program
         process.Start();
         
         // // Read output
-         string output = process.StandardOutput.ReadToEnd();
-         string error = process.StandardError.ReadToEnd();
+        string output = process.StandardOutput.ReadToEnd();
+        string error = process.StandardError.ReadToEnd();
         
         Console.Write(output);
         if (!string.IsNullOrEmpty(error))
             printCommandNotFound(command);
-        //     Console.Error.Write(error);
+            Console.Error.Write(error);
             
         process.WaitForExit();
     }
