@@ -54,7 +54,7 @@ public static class Program
 
         var startInfo = new ProcessStartInfo
         {
-            FileName = commandPath,
+            FileName = commandParts[0],
             Arguments = command.Substring(commandParts[0].Length).Trim(),
             RedirectStandardOutput = true,
             RedirectStandardError = true
