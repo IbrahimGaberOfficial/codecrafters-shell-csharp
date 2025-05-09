@@ -1,11 +1,9 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-
 public static class Program
 {
     static string PATH = Environment.GetEnvironmentVariable("PATH");
-
     public static int Main(string[] args)
     {
         while (true)
@@ -13,10 +11,8 @@ public static class Program
             // Wait for user input
             Console.Write("$ ");
             var command = Console.ReadLine();
-            
             if (string.IsNullOrEmpty(command))
                 continue;
-                
             if (command == "exit 0")
             {
                 return 0;
@@ -28,6 +24,11 @@ public static class Program
             else if (command.StartsWith("type"))
             {
                 CheckType(command.Substring("type ".Length).Trim());
+            }
+            else if (command == "pwd")
+            {
+                // Implement the pwd command
+                Console.WriteLine(Directory.GetCurrentDirectory());
             }
             else
             {
@@ -41,40 +42,33 @@ public static class Program
     {
         Console.WriteLine($"{command}: command not found");
     }
-
     private static void RunProgramUsingShell(string command)
     {
         var commandParts = command.Split(" ", StringSplitOptions.RemoveEmptyEntries);
         var commandPath = FindExecutable(commandParts[0]);
-
         if (commandPath == null){
             printCommandNotFound(commandParts[0]);
             return;
         }
-
         var startInfo = new ProcessStartInfo
         {
             FileName = commandParts[0],
             Arguments = command.Substring(commandParts[0].Length).Trim(),
+            UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true
         };
-        
         var process = new Process { StartInfo = startInfo };
         process.Start();
-        
         // // Read output
         string output = process.StandardOutput.ReadToEnd();
         string error = process.StandardError.ReadToEnd();
-        
         Console.Write(output);
         if (!string.IsNullOrEmpty(error))
             printCommandNotFound(command);
-            Console.Error.Write(error);
-            
+        Console.Error.Write(error);
         process.WaitForExit();
     }
-
     public static void CheckType(string command)
     {
         string[] builtInCommands = { "echo", "exit", "type", "pwd"};
@@ -93,7 +87,6 @@ public static class Program
             Console.WriteLine($"{command}: not found");
         }
     }
-
     private static string FindExecutable(string command)
     {
         string[] paths = PATH.Split(":", StringSplitOptions.RemoveEmptyEntries);
