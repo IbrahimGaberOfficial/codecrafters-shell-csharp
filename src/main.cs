@@ -27,8 +27,11 @@ public static class Program
             }
             else if (command == "pwd")
             {
-                // Implement the pwd command
-                Console.WriteLine(Directory.GetCurrentDirectory());
+                ExecutePWD();
+            }
+            else if (command.StartsWith("cd"))
+            {
+                ExecuteCD(command);
             }
             else
             {
@@ -38,6 +41,28 @@ public static class Program
             }
         }
     }
+
+    private static void ExecuteCD(string command)
+    {
+        var commandParts = command.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+        if (Directory.Exists(commandParts[1]))
+        {
+            Directory.SetCurrentDirectory(commandParts[1]);
+            return;
+        }
+        else
+        {
+            Console.WriteLine($"cd: {commandParts[1]}: No such file or directory");
+        }
+
+    }
+
+    private static void ExecutePWD()
+    {
+        // Implement the pwd command
+        Console.WriteLine(Directory.GetCurrentDirectory());
+    }
+
     public static void printCommandNotFound(string command)
     {
         Console.WriteLine($"{command}: command not found");
@@ -46,7 +71,8 @@ public static class Program
     {
         var commandParts = command.Split(" ", StringSplitOptions.RemoveEmptyEntries);
         var commandPath = FindExecutable(commandParts[0]);
-        if (commandPath == null){
+        if (commandPath == null)
+        {
             printCommandNotFound(commandParts[0]);
             return;
         }
@@ -71,7 +97,7 @@ public static class Program
     }
     public static void CheckType(string command)
     {
-        string[] builtInCommands = { "echo", "exit", "type", "pwd"};
+        string[] builtInCommands = { "echo", "exit", "type", "pwd" };
         if (builtInCommands.Contains(command))
         {
             Console.WriteLine($"{command} is a shell builtin");
