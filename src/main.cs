@@ -4,6 +4,7 @@ using System.Text;
 public static class Program
 {
     static string PATH = Environment.GetEnvironmentVariable("PATH");
+    static string HOME = Environment.GetEnvironmentVariable("HOME");
     public static int Main(string[] args)
     {
         while (true)
@@ -45,7 +46,12 @@ public static class Program
     private static void ExecuteCD(string command)
     {
         var commandParts = command.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-        if (Directory.Exists(commandParts[1]))
+        if (commandParts[1] == "~")
+        {
+            Directory.SetCurrentDirectory(HOME);
+            return;
+        }
+        else if (Directory.Exists(commandParts[1]))
         {
             Directory.SetCurrentDirectory(commandParts[1]);
             return;
