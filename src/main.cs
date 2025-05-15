@@ -20,9 +20,9 @@ public static class Program
             {
                 return 0;
             }
-            else if (command.StartsWith("echo "))
+            else if (command.StartsWith("echo"))
             {
-                DoEcho(command.Substring("echo ".Length));
+                DoEcho(command.Substring("echo".Length).Trim());
             }
             else if (command.StartsWith("type"))
             {
@@ -54,6 +54,8 @@ public static class Program
         }
         else
         {
+            var strs = str.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            str = string.Join(' ', strs);
             System.Console.WriteLine(str);
             return;
         }
