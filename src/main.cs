@@ -1,10 +1,12 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+
 public static class Program
 {
     static string PATH = Environment.GetEnvironmentVariable("PATH");
     static string HOME = Environment.GetEnvironmentVariable("HOME");
+
     public static int Main(string[] args)
     {
         while (true)
@@ -20,7 +22,7 @@ public static class Program
             }
             else if (command.StartsWith("echo "))
             {
-                Console.WriteLine(command.Substring("echo ".Length));
+                DoEcho(command.Substring("echo ".Length));
             }
             else if (command.StartsWith("type"))
             {
@@ -43,6 +45,20 @@ public static class Program
         }
     }
 
+    private static void DoEcho(string str)
+    {
+        if (str.StartsWith("'"))
+        {
+            System.Console.WriteLine(str.Substring(1, str.Length - 2));
+            return;
+        }
+        else
+        {
+            System.Console.WriteLine(str);
+            return;
+        }
+    }
+
     private static void ExecuteCD(string command)
     {
         var commandParts = command.Split(" ", StringSplitOptions.RemoveEmptyEntries);
@@ -60,7 +76,6 @@ public static class Program
         {
             Console.WriteLine($"cd: {commandParts[1]}: No such file or directory");
         }
-
     }
 
     private static void ExecutePWD()
@@ -73,6 +88,7 @@ public static class Program
     {
         Console.WriteLine($"{command}: command not found");
     }
+
     private static void RunProgramUsingShell(string command)
     {
         var commandParts = command.Split(" ", StringSplitOptions.RemoveEmptyEntries);
@@ -85,10 +101,10 @@ public static class Program
         var startInfo = new ProcessStartInfo
         {
             FileName = commandParts[0],
-            Arguments = command.Substring(commandParts[0].Length).Trim(),
+            Arguments = command.Substring(commandParts[0].Length).Trim().Replace("'", ""),
             UseShellExecute = false,
             RedirectStandardOutput = true,
-            RedirectStandardError = true
+            RedirectStandardError = true,
         };
         var process = new Process { StartInfo = startInfo };
         process.Start();
@@ -101,6 +117,7 @@ public static class Program
         Console.Error.Write(error);
         process.WaitForExit();
     }
+
     public static void CheckType(string command)
     {
         string[] builtInCommands = { "echo", "exit", "type", "pwd" };
@@ -119,6 +136,7 @@ public static class Program
             Console.WriteLine($"{command}: not found");
         }
     }
+
     private static string FindExecutable(string command)
     {
         string[] paths = PATH.Split(":", StringSplitOptions.RemoveEmptyEntries);
